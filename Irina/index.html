@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Репетитор Ирина — математика и физика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0d12;
+            --fg: #e9ecf1;
+            --muted: #9aa3b2;
+            --accent1: #6a11cb;
+            --accent2: #2575fc;
+            --glass: rgba(255, 255, 255, .04);
+            --border: rgba(255, 255, 255, .06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+        }
+
+        .bg-repetitor {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 50vw;
+            pointer-events: none;
+            z-index: -2;
+            background: url('repetitor.png') no-repeat center right -10vw/140% auto;
+            opacity: 0;
+            animation: fadeInPhoto 2s ease-in-out forwards;
+        }
+
+        @keyframes fadeInPhoto {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Mobile override to remove transform/scale */
+        @media screen and (max-device-width: 1024px), screen and (max-width: 768px) and (orientation: portrait) {
+            .bg-repetitor {
+                width: 100vw;
+                height: 100vh;
+                background-size: cover;
+                background-position: center;
+                transform: none;
+                animation: fadeInPhoto 2s ease-in-out forwards;
+                opacity: 0;
+            }
+        }
+
+        body.mobile .bg-repetitor {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-position: center;
+            background-size: cover;
+            transform: none;
+            animation: fadeInPhoto 2s ease-in-out forwards;
+            opacity: 0;
+        }
+
+
+        /* ===== canvas background with math glyphs ===== */
+        #math-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 20%, rgba(106, 17, 203, .08) 0%, transparent 60%),
+            radial-gradient(circle at 80% 80%, rgba(37, 117, 252, .06) 0%, transparent 60%);
+        }
+
+        /* ===== top progress bar ===== */
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 100%;
+            z-index: 9999;
+            background: rgba(255, 255, 255, .05)
+        }
+
+        .progress__bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            transition: width .1s linear
+        }
+
+        /* ===== hero ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 100px 20px 60px
+        }
+
+        .blob {
+            position: absolute;
+            width: 60vmax;
+            height: 60vmax;
+            background: radial-gradient(circle at 30% 30%, rgba(106, 17, 203, .35), rgba(37, 117, 252, .15));
+            filter: blur(120px);
+            z-index: -1;
+            animation: blob 18s ease-in-out infinite
+        }
+
+        @keyframes blob {
+            0% {
+                transform: translate(-20%, -10%) scale(1)
+            }
+            33% {
+                transform: translate(10%, 0%) scale(1.1)
+            }
+            66% {
+                transform: translate(-5%, 20%) scale(0.9)
+            }
+            100% {
+                transform: translate(-20%, -10%) scale(1)
+            }
+        }
+
+        .hero h1 {
+            font-size: min(9vw, 68px);
+            font-weight: 800;
+            line-height: 1.05;
+            background: linear-gradient(135deg, var(--accent1), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .hero p {
+            margin-top: 22px;
+            max-width: 780px;
+            font-size: 20px;
+            color: var(--muted)
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 28px;
+            justify-content: center
+        }
+
+        .chip {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            color: #cbd3e1
+        }
+
+        .magnetic {
+            display: inline-block;
+            margin-top: 34px;
+            padding: 18px 36px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #fff;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            box-shadow: 0 8px 24px rgba(106, 17, 203, .25);
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0)
+        }
+
+        .magnetic span {
+            position: relative;
+            z-index: 2
+        }
+
+        .magnetic::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, .35), transparent 60%);
+            opacity: 0;
+            transition: opacity .25s
+        }
+
+        .magnetic:hover::after {
+            opacity: .35
+        }
+
+        /* ===== staged reveal after photo animation ===== */
+        .hero h1, .hero p, .chips, .magnetic {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp .8s ease-out forwards
+        }
+
+        .hero h1 {
+            animation-delay: 2.6s
+        }
+
+        .hero p {
+            animation-delay: 2.8s
+        }
+
+        .chips {
+            animation-delay: 3s
+        }
+
+        .magnetic {
+            animation-delay: 3.2s
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px)
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ===== sections as neon-outlined panels ===== */
+        /* исправлено центрирование main -> секции прижаты влево */
+        main {
+            max-width: 60%;
+            padding: 0 20px 120px;
+            margin-left: 0;
+        }
+
+        main > .section {
+            margin-left: 0;
+        }
+
+        section.section {
+            position: relative;
+            margin: 120px 0 0;
+            padding: 48px 32px;
+            border-radius: 24px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            transform-origin: top;
+            opacity: 0;
+            transform: translateY(40px) scale(.98);
+            transition: opacity .8s cubic-bezier(.2, .8, .2, 1), transform .8s cubic-bezier(.2, .8, .2, 1)
+        }
+
+        section.section.visible {
+            opacity: 1;
+            transform: none
+        }
+
+        section.section::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(106, 17, 203, .5), rgba(37, 117, 252, .2));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none
+        }
+
+        h2.section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, var(--accent1), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        .list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0
+        }
+
+        .list li {
+            position: relative;
+            padding-left: 26px;
+            margin: 10px 0;
+            color: #d5dbea
+        }
+
+        .list li:before {
+            content: "➤";
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: .4
+        }
+
+        /* timeline */
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+            margin-top: 22px
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(var(--accent1), var(--accent2))
+        }
+
+        .timeline-item {
+            margin: 18px 0
+        }
+
+        .timeline-item h3 {
+            font-size: 18px;
+            margin-bottom: 6px
+        }
+
+        /* pricing slider */
+        .pricing {
+            display: grid;
+            grid-template-columns:1fr;
+            gap: 28px;
+            align-items: center
+        }
+
+        .price-calc {
+            display: flex;
+            flex-direction: column;
+            gap: 14px
+        }
+
+        .price-value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .08);
+            outline: none
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent1), var(--accent2));
+            cursor: pointer;
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, .08)
+        }
+
+        .price-cards {
+            display: grid;
+            grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px
+        }
+
+        .price-card {
+            position: relative;
+            padding: 18px 16px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid rgba(255, 255, 255, .05);
+            transition: transform .25s
+        }
+
+        .price-card:hover {
+            transform: translateY(-4px)
+        }
+
+        /* FAQ */
+        details {
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid rgba(255, 255, 255, .05);
+            border-radius: 12px;
+            padding: 16px 20px;
+            transition: .3s
+        }
+
+        details[open] {
+            background: rgba(255, 255, 255, .04)
+        }
+
+        details + details {
+            margin-top: 10px
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: 600
+        }
+
+        summary::-webkit-details-marker {
+            display: none
+        }
+
+        /* floating toc (section dots) */
+        .dots {
+            position: fixed;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .15);
+            transition: transform .2s, background .2s
+        }
+
+        .dot.active {
+            background: linear-gradient(135deg, var(--accent1), var(--accent2));
+            transform: scale(1.3)
+        }
+
+        footer {
+            margin: 100px 0 40px;
+            text-align: center;
+            color: #72809a;
+            font-size: 14px
+        }
+
+        @media (min-width: 900px) {
+            .pricing {
+                grid-template-columns:1.2fr 1fr
+            }
+        }
+
+        @media screen and (max-device-width: 1024px), screen and (max-width: 768px) and (orientation: portrait) {
+            .bg-repetitor {
+                width: 100vw;
+                height: 100vh;
+                background-size: cover;
+                background-position: center;
+                transform: translateX(-50vw) scale(2);
+                animation: photoEnterMobile 2.4s ease-out forwards;
+                opacity: 0;
+            }
+
+            @keyframes photoEnterMobile {
+                0% {
+                    opacity: 0;
+                    transform: translateX(-50vw) scale(2);
+                }
+                30% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0) scale(1);
+                }
+            }
+        }
+
+        @keyframes photoEnterMobile {
+            0% {
+                opacity: 0;
+                transform: translateX(-50vw) scale(2);
+            }
+            30% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        }
+        }
+        /* === Mobile detection by capability (pointer: coarse / touch) === */
+        body.mobile .bg-repetitor {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background-position: center;
+            background-size: cover;
+            transform: translateX(-50vw) scale(2);
+            animation: photoEnterMobile 2.4s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes photoEnterMobile {
+            0% {
+                opacity: 0;
+                transform: translateX(-50vw) scale(2);
+            }
+            30% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-repetitor"></div>
+<canvas id="math-canvas"></canvas>
+<div class="progress">
+    <div class="progress__bar" id="progressBar"></div>
+</div>
+<nav class="dots" id="dots"></nav>
+
+<header class="hero" id="top">
+    <div class="blob"></div>
+    <h1>Здравствуйте! Меня зовут Ирина</h1>
+    <p>Репетитор по математике. Учитель математики в лицее «ЦОД», студентка 5 курса НГПУ им. К. Минина. Золотая
+        медалистка, участница олимпиад, публикуюсь в научных сборниках.</p>
+    <div class="chips">
+        <span class="chip">Математика (1–11 классы)</span>
+        <span class="chip">ОГЭ / ЕГЭ (математика, физика)</span>
+        <span class="chip">Онлайн-доска + видеосвязь</span>
+    </div>
+    <a href="#contact" class="magnetic"><span>Записаться на бесплатную встречу</span></a>
+</header>
+
+<main>
+    <section class="section" id="directions">
+        <h2 class="section-title">Направления подготовки</h2>
+        <ul class="list">
+            <li>📚 Математика (1–11 классы)</li>
+        </ul>
+    </section>
+
+    <section class="section" id="includes">
+        <h2 class="section-title">Что включают занятия</h2>
+        <ul class="list">
+            <li>📕 Объяснение школьной программы</li>
+            <li>📗 Помощь с домашкой (разбор и ошибки)</li>
+            <li>📙 Заполнение пробелов в знаниях</li>
+            <li>📘 Подготовка к контрольным</li>
+            <li>📕 Подготовка к ОГЭ/ЕГЭ (математика, физика)</li>
+        </ul>
+        <div class="timeline">
+            <div class="timeline-item">
+                <h3>1. Диагностика</h3>
+                <p class="muted">Выявляем пробелы и определяем цели (оценка, дата экзамена, желаемый балл).</p>
+            </div>
+            <div class="timeline-item">
+                <h3>2. Индивидуальный план</h3>
+                <p class="muted">Подбираю темп, методику и формат заданий под ученика.</p>
+            </div>
+            <div class="timeline-item">
+                <h3>3. Практика и разборы</h3>
+                <p class="muted">Сразу закрепляем материал задачами, подробно разбираем ошибки.</p>
+            </div>
+            <div class="timeline-item">
+                <h3>4. Контроль прогресса</h3>
+                <p class="muted">Промежуточные проверки, мини‑контрольные, отчёты родителям.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="format">
+        <h2 class="section-title">Почему выбирают меня</h2>
+        <ul class="list">
+            <li>✔ Выдается курс, по которому идет обучение (родитель может отслеживать прогресс)</li>
+            <li>✔ Обучаю нейросетям и выдаю аккаунты с премиум-доступом (если нужно)</li>
+            <li>✔ Большой опыт и индивидуальный подход</li>
+            <li>✔ Постоянная обратная связь с родителями</li>
+            <li>✔ Объяснение «на пальцах» даже сложных тем</li>
+            <li>✔ Всегда на связи — можно задавать вопросы вне занятий</li>
+            <li>✔ Помогаю поверить в свои силы</li>
+        </ul>
+    </section>
+
+    <section class="section" id="format_lesson">
+        <h2 class="section-title">Формат занятий</h2>
+        <p>☑️ Онлайн по видеосвязи + онлайн-доска на любой платформе</p>
+    </section>
+
+    <section class="section" id="pricing">
+        <h2 class="section-title">Стоимость индивидуального занятия</h2>
+        <div class="pricing">
+            <div class="price-calc">
+                <label for="duration">Выберите длительность занятия:</label>
+                <input id="duration" type="range" min="0" max="2" step="1" value="1"/>
+                <div><span id="durationLabel">1 час</span></div>
+                <div class="price-value" id="priceValue">1400 ₽</div>
+            </div>
+            <div class="price-cards">
+                <p>Подбираю удобный график и интенсивность. Все материалы — в электронном виде.</p>
+                <p>Вы освоите:</p>
+                <ul class="list">
+                    <li>✔️ Разные способы решения задач</li>
+                    <li>✔️ Технику быстрого анализа и решения</li>
+                    <li>✔️ Уверенность на экзамене</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="extra">
+        <h2 class="section-title">Дополнительно</h2>
+        <p>📌 Решаю задачи по алгебре, геометрии, физике:</p>
+        <ul class="list">
+            <li>Контрольные / самостоятельные</li>
+            <li>Домашние задания</li>
+            <li>Индивидуальные задания</li>
+        </ul>
+        <p>Решения оформлены аккуратно и подробно. Цена — от 50 ₽ (зависит от объёма).</p>
+    </section>
+
+    <section class="section" id="education">
+        <h2 class="section-title">Образование</h2>
+        <p>Педобразование с двумя профилями — математика и физика (НГПУ им. К. Минина, 2025 г.)</p>
+    </section>
+
+    <section class="section" id="faq">
+        <h2 class="section-title">Популярные вопросы</h2>
+        <details>
+            <summary>Сколько длится пробное занятие?</summary>
+            <p>Обычно 30–40 минут: знакомимся, определяем цели, проводим мини‑диагностику.</p>
+        </details>
+        <details>
+            <summary>Как проходят занятия онлайн?</summary>
+            <p>Видеосвязь + интерактивная доска (любой удобный сервис). Все материалы и домашние — в общую папку.</p>
+        </details>
+        <details>
+            <summary>Можно ли платить помесячно?</summary>
+            <p>Да, и поминутно тоже :) Удобный для вас формат обсудим на созвоне.</p>
+        </details>
+    </section>
+
+    <section class="section" id="contact">
+        <h2 class="section-title">Связь</h2>
+        <p>📲 Отвечу на все вопросы — пишите!</p>
+        <div style="display:flex;gap:20px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:20px;">
+            <a href="https://t.me/irinka_sstar" target="_blank" rel="noopener" aria-label="Telegram">
+                <svg width="48" height="48" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="120" cy="120" r="120" fill="#2AABEE"/>
+                    <path d="M178.7 73.7L156 173.3c-1.6 7.2-5.9 9-12 5.6l-33.2-24.5-16 15.4c-1.8 1.8-3.3 3.3-6.7 3.3l2.4-34.3 62.5-56.4c2.7-2.4-0.6-3.7-4.2-1.3l-77.3 48.7-33.3-10.4c-7.2-2.3-7.4-7.2 1.5-10.7l130.3-50.2c6.1-2.2 11.5 1.3 9.6 10.6z"
+                          fill="#fff"/>
+                </svg>
+            </a>
+            <a href="https://vk.com/irinka__star" target="_blank" rel="noopener" aria-label="VK">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#4680C2"
+                          d="M12 0C5.372 0 0 5.372 0 12c0 6.627 5.372 12 12 12s12-5.373 12-12C24 5.372 18.628 0 12 0z"/>
+                    <path fill="#fff"
+                          d="M12.882 16.8c-4.2 0-6.6-2.877-6.71-7.69h2.112c.07 3.318 1.53 4.72 2.695 5.042V9.11h2v3.28c1.145-.123 2.346-1.43 2.75-3.28h2.02c-.31 1.76-1.46 3.067-2.3 3.612.84.4 2.14 1.56 2.64 3.078h-2.22c-.44-1.29-1.54-2.28-2.94-2.43v2.431h-.047z"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+</main>
+
+<footer>&copy; 2025 Ирина — Репетитор по математике и физике</footer>
+
+<script>
+    // ===== mobile detection (not by width, but by capabilities) =====
+    (function () {
+        const byPointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+        const byTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+        const isMobile = byPointer || byTouch;
+        if (isMobile) document.body.classList.add('mobile');
+    })();
+    // ===== Scroll progress bar =====
+    const progress = document.getElementById('progressBar');
+    window.addEventListener('scroll', () => {
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const percent = (scrollTop / docHeight) * 100;
+        progress.style.width = percent + '%';
+    });
+
+    // ===== reveal sections =====
+    const reveal = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+            }
+        });
+    }, {threshold: 0.15});
+    document.querySelectorAll('section.section').forEach(s => reveal.observe(s));
+
+    // ===== floating dots toc =====
+    const sections = Array.from(document.querySelectorAll('section.section'));
+    const dotsNav = document.getElementById('dots');
+    const dots = sections.map((s, i) => {
+        const a = document.createElement('a');
+        a.href = '#' + s.id;
+        a.className = 'dot';
+        dotsNav.appendChild(a);
+        return a;
+    });
+    const activateDot = () => {
+        let idx = 0;
+        const scrollY = window.scrollY + innerHeight / 3;
+        sections.forEach((s, i) => {
+            if (scrollY >= s.offsetTop) idx = i;
+        });
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    };
+    window.addEventListener('scroll', activateDot);
+    activateDot();
+
+    // ===== pricing slider logic =====
+    const duration = document.getElementById('duration');
+    const durationLabel = document.getElementById('durationLabel');
+    const priceValue = document.getElementById('priceValue');
+    const labels = ['45 минут', '1 час', '1,5 часа'];
+    const values = [1100, 1400, 1900];
+    const setPrice = () => {
+        const i = parseInt(duration.value, 10);
+        durationLabel.textContent = labels[i];
+        priceValue.textContent = values[i] + ' ₽';
+    };
+    duration.addEventListener('input', setPrice);
+    setPrice();
+
+    // ===== magnetic button effect =====
+    document.querySelectorAll('.magnetic').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+            const rect = btn.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            btn.style.setProperty('--x', x + '%');
+            btn.style.setProperty('--y', y + '%');
+        });
+    });
+
+    // ===== math canvas background =====
+    const canvas = document.getElementById('math-canvas');
+    const ctx = canvas.getContext('2d');
+    const glyphs = ['∑', '√', 'π', '∞', '∫', '≈', 'Δ', '±', '→', '≤', '≥', '∂', 'λ', 'θ', 'μ', '❤️', '⭐'];
+    let particles = [];
+
+    function resize() {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    function spawn() {
+        const x = Math.random() * canvas.width;
+        const y = canvas.height + 40;
+        const speed = 0.4 + Math.random() * 0.8;
+        const size = 16 + Math.random() * 26;
+        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
+        const rot = Math.random() * Math.PI * 2;
+        particles.push({x, y, speed, size, glyph, rot});
+    }
+
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,255,255,.3)';
+        particles.forEach(p => {
+            p.y -= p.speed;
+            p.rot += 0.002;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.font = `${p.size}px Inter`;
+            ctx.fillText(p.glyph, -p.size / 2, p.size / 2);
+            ctx.restore();
+        });
+        ctx.restore();
+        particles = particles.filter(p => p.y > -60);
+        if (particles.length < 100) spawn();
+        requestAnimationFrame(update);
+    }
+
+    update();
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT‑Факультет — Образование будущего</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --fg: #e9ecf1;
+      --muted: #9aa3b2;
+      --accent1: #6a11cb;
+      --accent2: #2575fc;
+      --glass: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      overflow-x: hidden;
+    }
+    .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;padding:100px 20px 60px}
+    .blob{position:absolute;width:60vmax;height:60vmax;background:radial-gradient(circle at 30% 30%, rgba(106,17,203,.35), rgba(37,117,252,.15));filter:blur(120px);z-index:-1;animation:blob 18s ease-in-out infinite}
+    @keyframes blob{0%{transform:translate(-20%, -10%) scale(1)}33%{transform:translate(10%, 0%) scale(1.1)}66%{transform:translate(-5%, 20%) scale(0.9)}100%{transform:translate(-20%, -10%) scale(1)}}
+    .hero h1{font-size:min(9vw,64px);font-weight:800;line-height:1.05;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{margin-top:22px;max-width:760px;font-size:20px;color:var(--muted)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;justify-content:center}
+    .chip{padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--border);font-size:14px;color:#cbd3e1}
+    .magnetic{display:inline-block;margin-top:34px;padding:18px 36px;border-radius:999px;font-weight:600;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--accent1),var(--accent2));box-shadow:0 8px 24px rgba(106,17,203,.25);position:relative;overflow:hidden;transform:translateZ(0)}
+    .magnetic span{position:relative;z-index:2}
+    main{max-width:1100px;padding:0 20px 120px;margin:auto;display:flex;flex-direction:column;gap:80px}
+    section.section{position:relative;padding:48px 32px;border-radius:24px;background:var(--glass);border:1px solid var(--border);backdrop-filter:blur(16px)}
+    h2.section-title{font-size:28px;font-weight:700;margin-bottom:18px;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .list{list-style:none;padding-left:0;margin:0}
+    .list li{position:relative;padding-left:26px;margin:10px 0;color:#d5dbea}
+    .list li:before{content:"\279C";position:absolute;left:0;top:0;opacity:.4}
+    .price-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .price-card{padding:18px 16px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);text-align:center;transition:.2s ease;cursor:pointer;text-decoration:none;color:#fff;font-weight:600}
+    .price-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.04)}
+    .faculty-photo {
+      max-width: 100%;
+      border-radius: 24px;
+      margin: 30px auto 0;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: block;
+    }
+    footer{text-align:center;margin-top:100px;font-size:14px;color:#6d7890}
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="blob"></div>
+    <h1>IT‑Факультет «Образование будущего»</h1>
+    <p>Онлайн-направление от команды опытных педагогов: готовим к ЕГЭ, ОГЭ и улучшаем школьные оценки с 5 по 11 класс.</p>
+    <div class="chips">
+      <span class="chip">Информатика</span>
+      <span class="chip">Математика</span>
+      <span class="chip">Русский язык</span>
+      <span class="chip">Английский язык</span>
+      <span class="chip">Подготовка к ЕГЭ / ОГЭ</span>
+    </div>
+    <a href="#teachers" class="magnetic"><span>Познакомиться с преподавателями</span></a>
+  </header>
+
+  <main>
+    <section class="section" id="about">
+      <h2 class="section-title">О факультете</h2>
+      <p>Мы — команда преподавателей с университетским образованием, многолетним опытом и авторскими методиками. Объединены идеей качественного и доступного онлайн‑обучения для школьников.</p>
+      <ul class="list">
+        <li>🎯 Индивидуальный подход к каждому ученику</li>
+        <li>🧠 Акцент на понимание, а не заучивание</li>
+        <li>📈 Прозрачный прогресс: диагностика, отчёты, поддержка родителей</li>
+      </ul>
+      <img src="repetitors.jpg" alt="Наша команда преподавателей" class="faculty-photo">
+    </section>
+
+    <section class="section" id="teachers">
+      <h2 class="section-title">Наши преподаватели</h2>
+      <div class="price-cards">
+        <a class="price-card" href="Irina/index.html"><strong>Ирина</strong><br/>Математика</a>
+        <a class="price-card" href="Seregy/index.html"><strong>Сергей</strong><br/>Информатика</a>
+        <a class="price-card" href="#"><strong>Вакансия открыта</strong><br/>Русский язык</a>
+        <a class="price-card" href="Svetlana/index.html"><strong>Светлана</strong><br/>Английский язык</a>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <h2 class="section-title">Как мы обучаем</h2>
+      <ul class="list">
+        <li>🖥️ Онлайн-занятия с интерактивной доской</li>
+        <li>📝 Индивидуальные планы и регулярный фидбек</li>
+        <li>📂 Все материалы — в общем доступе ученика</li>
+      </ul>
+    </section>
+
+    <section class="section" id="reviews">
+      <h2 class="section-title">Отзывы учеников</h2>
+      <details><summary>Анна (11 класс):</summary><p>Сдала ЕГЭ по математике на 88 баллов, хотя раньше еле на тройку тянула. Спасибо Ирине за терпение и поддержку!</p></details>
+      <details><summary>Алексей (9 класс):</summary><p>Очень крутая доска, как будто мы реально вместе решаем задачи. Преподаватель Дмитрий объясняет даже сложные темы просто.</p></details>
+    </section>
+
+    <section class="section" id="join">
+      <h2 class="section-title">Как начать обучение</h2>
+      <ol class="list">
+        <li>🚀 Оставляете заявку (Telegram / форма)</li>
+        <li>🔍 Проводим бесплатную диагностику</li>
+        <li>📅 Назначаем первую встречу и стартуем</li>
+      </ol>
+    </section>
+
+    <section class="section" id="contact">
+      <h2 class="section-title">Связь</h2>
+      <p>📲 Напишите нам — подберём преподавателя под ваши цели!</p>
+      <div style="display:flex;gap:20px;justify-content:center;margin-top:20px">
+        <a href="https://t.me/your_faculty_contact" class="magnetic"><span>Написать в Telegram</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 IT‑Факультет «Образование будущего» — частные преподаватели онлайн
+  </footer>
+</body>
+</html>
